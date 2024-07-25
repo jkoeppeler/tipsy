@@ -109,15 +109,28 @@ class TipsyConfig(dict):
 
             # FIXME: These are some unfortunate special cases
             for section in ('tester', 'sut'):
+
                 if benchmark.get(section, {}).get('environ'):
-                    benchmark[section]['environ'] = \
-                        self._scale_outer_test_variables(benchmark[section]['environ'])
+                    benchmark[section]['environ'] = self._turn_list_to_env_array(benchmark[section]['environ'])
+
+                if benchmark.get(section, {}).get('test-variables'):
+                    benchmark[section]['test-variables'] = \
+                        self._scale_outer_test_variables(benchmark[section]['test-variables'])
+
+                    for x in benchmark[section]['test-variables']:
+                        x.update(benchmark[section]['environ'])
+                    
+                    benchmark[section]['environ'] = benchmark[section]['test-variables']
 
             scale = getattr(self, '_scale_%s' % benchmark.get('scale', 'none'))
             segments = [x for x in benchmark.keys() if x != 'scale']
             confs = {}
             for segment in segments:
-                confs[segment] = scale(getattr(benchmark, segment))
+                if segment == 'tester':
+                    confs[segment] = [getattr(benchmark, segment)]
+                else:
+                    confs[segment] = scale(getattr(benchmark, segment))
+
             confs = self._scale_outer(confs)
             for conf in confs:
                 validate.validate_data(conf, schema_name='benchmark')
@@ -129,6 +142,12 @@ class TipsyConfig(dict):
         # other.
         self.configs.sort(key=lambda x: x.get('sut', {}).get('type', ''))
 
+    def _turn_list_to_env_array(self, conf_dict):
+        if type(conf_dict) not in [dict, TipsyConfig]:
+            return conf_dict
+
+        return {k: ' '.join(v) if type(v) == list else v for k,v in conf_dict.items() }
+
     def _scale_none(self, conf_dict):
         if type(conf_dict) not in [dict, TipsyConfig]:
             return conf_dict
@@ -139,9 +158,6 @@ class TipsyConfig(dict):
         if type(conf_dict) not in [dict, TipsyConfig]:
             return conf_dict
         tmp = {k: v if type(v) == list else [v] for k, v in conf_dict.items()}
-        print(tmp)
-        for x in itertools.product(*tmp.values()):
-            print(x)
         return list((dict(zip(tmp, x))
                      for x in itertools.product(*tmp.values())))
         
@@ -152,6 +168,18 @@ class TipsyConfig(dict):
         tmp = {k: v if type(v) == list else [v] for k, v in conf_dict.items()}
         return list((dict(zip(tmp, x))
                      for x in itertools.product(*tmp.values())))
+
+    def _scale_joint_test_variables(self, conf_dict):
+        if type(conf_dict) not in [dict, TipsyConfig]:
+            return conf_dict
+        min_len = min([len(v)
+                       for k, v in conf_dict.items() if type(v) == list]
+                      or [1])
+        ret_list = []
+        for i in range(min_len):
+            ret_list.append({k: v[i] if type(v) == list else v
+                             for k, v in conf_dict.items()})
+        return ret_list
 
     def _scale_joint(self, conf_dict):
         if type(conf_dict) not in [dict, TipsyConfig]:

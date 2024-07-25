@@ -27,6 +27,7 @@ class Tester(Base):
         super().__init__(conf)
         tester = conf.tester
         self.script = tester.script
+        self.additional_measurement_files = tester.additional_measurement_files
         #TODO: self.runtime = tester.runtime
         self.env = os.environ.copy()
         for var, val in tester.environ.items():
@@ -34,10 +35,13 @@ class Tester(Base):
 
     def _run(self, out_dir):
         self.out_dir = out_dir
+        print("TESTER")
+        print(self.additional_measurement_files)
         cmd = self.script
         subprocess.run(cmd, shell=True, check=True, cwd=out_dir, env=self.env)
 
     def collect_results(self):
+
         try:
             with open(Path(self.out_dir)/'result.json') as f:
                 res = json.load(f)

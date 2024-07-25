@@ -41,11 +41,14 @@ class Tester(Base):
         self.runtime = tester.test_time
         self.rate_limit = tester.rate_limit
         self.loss_tolerance = tester.loss_tolerance
+        self.additional_measurement_files = tester.additional_measurement_files
 
     def _run(self, out_dir):
         pcap = out_dir / 'traffic.pcap'
         pfix = out_dir / 'mg'
         hfile = out_dir / 'mg.histogram.csv'
+        print("TESTER")
+        print(self.additional_measurement_files)
         cmd = ['sudo', self.mg_cmd, self.script, self.txdev, self.rxdev, pcap,
                '-l', '-t', '-r', self.runtime, '-o', pfix, '--hfile', hfile]
         if self.rate_limit:

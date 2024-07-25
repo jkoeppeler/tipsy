@@ -16,6 +16,14 @@
         "tipsy": 1
       }
     },
+    "additional-measurement-files": {
+      "type": "array",
+	  "items": {
+		"type": "string"
+	  },
+      "description": "efine additional measurement resource files",
+      "default": []
+    },
     "script": {
       "type": "string",
       "description": "Script to execute in a shell.  The string is subject to variable substitution, so environment variables can be specified in the command line. (When type==generic)",
