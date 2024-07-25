@@ -75,6 +75,7 @@ class Plot(Base):
             error_bar = r'+ [error bars/.cd,y dir=both,y explicit]'
 
         addplot = ""
+        symbols = list()
         for name, points in ordered_series:
             addplot += "\n"
             addplot += f"    \\addplot{error_bar} coordinates {{\n"
@@ -83,10 +84,18 @@ class Plot(Base):
                 if error_bar and len(p) > 2:
                     addplot += f" +- ({p[2]}, {p[2]})"
                 addplot += "\n"
+                if not isinstance(p[0], (int, float)) and p[0] not in symbols:
+                    symbols.append(p[0])
             addplot += "    };\n"
             addplot += r'    \addlegendentry{%s}' % str2tex(name)
             addplot += "\n"
             addplot += self.latex_extra_plot(name, points)
+
+        
+        symbolic_str = "{"
+        for x in symbols:
+            symbolic_str +=f"{x},"
+        symbolic_str = symbolic_str[:-1]+"}"
         f = {
             'title': title,
             'xlabel': str2tex(self.conf.x_axis),
@@ -98,6 +107,10 @@ class Plot(Base):
         else:
             f['ylabel_opt'] = ""
         f['other_opts'] = ''
+        if len(symbolic_str) > 1:
+            f['symbolic_x_coords'] = "symbolic x coords="+symbolic_str+","
+        else:
+            f['symbolic_x_coords'] = ""
         sep = "\n      "
         for prop in ['xmin', 'xmax', 'ymin', 'ymax']:
             if self.conf.get(prop, None) is not None:
@@ -109,6 +122,7 @@ class Plot(Base):
             \begin{{tikzpicture}}
             \begin{{{axis_type}}}[
                 xlabel={xlabel}, {ylabel_opt}
+                {symbolic_x_coords}
                 legend pos=outer north east,
                 legend cell align=left, {other_opts},
             ]
@@ -176,9 +190,9 @@ class Plot(Base):
             title = self.conf.title.format(**row)
 
         for k, points in series.items():
-            series[k] = sorted(points)
+            series[k] = points
 
-        series = collections.OrderedDict(sorted(series.items()))
+        series = collections.OrderedDict(series.items())
 
         if series:
             self.format_matplotlib(series, title)
