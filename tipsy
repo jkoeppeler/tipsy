@@ -111,7 +111,7 @@ class TipsyConfig(dict):
             for section in ('tester', 'sut'):
                 if benchmark.get(section, {}).get('environ'):
                     benchmark[section]['environ'] = \
-                        self._scale_outer(benchmark[section]['environ'])
+                        self._scale_outer_test_variables(benchmark[section]['environ'])
 
             scale = getattr(self, '_scale_%s' % benchmark.get('scale', 'none'))
             segments = [x for x in benchmark.keys() if x != 'scale']
@@ -134,6 +134,17 @@ class TipsyConfig(dict):
             return conf_dict
         return [{k: v[0] if type(v) == list else v
                  for k, v in conf_dict.items()}]
+
+    def _scale_outer_test_variables(self, conf_dict):
+        if type(conf_dict) not in [dict, TipsyConfig]:
+            return conf_dict
+        tmp = {k: v if type(v) == list else [v] for k, v in conf_dict.items()}
+        print(tmp)
+        for x in itertools.product(*tmp.values()):
+            print(x)
+        return list((dict(zip(tmp, x))
+                     for x in itertools.product(*tmp.values())))
+        
 
     def _scale_outer(self, conf_dict):
         if type(conf_dict) not in [dict, TipsyConfig]:

@@ -14,6 +14,13 @@
         "tipsy": 1
       }
     },
+    "test-variables": {
+      "type": "object",
+      "description": "Object whose properties are set as environment variables (When type==generic)",
+      "default": {
+        "tipsy": 1
+      }
+    },
     "script": {
       "type": "string",
       "description": "Script to execute in a shell.  The string is subject to variable substitution, so environment variables can be specified in the command line. (When type==generic)",
