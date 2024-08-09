@@ -115,7 +115,7 @@ class TipsyConfig(dict):
 
                 if benchmark.get(section, {}).get('test-variables'):
                     benchmark[section]['test-variables'] = \
-                        self._scale_outer_test_variables(benchmark[section]['test-variables'])
+                        self._scale_outer(benchmark[section]['test-variables'])
 
                     for x in benchmark[section]['test-variables']:
                         x.update(benchmark[section]['environ'])

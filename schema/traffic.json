@@ -21,6 +21,33 @@
       "default": "/dev/stdout",
       "description": "Output file"
     },
+    "name": {
+      "type": "string",
+      "enum": ["generic", "pcap"],
+      "description": "Type of traffic: simple, creates simple udp pcap with specified pkt-num, pkt-size and number of flows"
+    },
+	"dstmac": {
+		"type": "string",
+		"default": "00:00:00:00:00:00",
+		"description": "mac address of SUT"
+	},
+	"dstip": {
+		"type": "string",
+		"default": "0.0.0.0",
+		"description": "destination ip address of packet"
+	},
+	"srcip": {
+		"type": "string",
+		"default": "0.0.0.0",
+		"description": "source ip address of packet"
+	},
+	"flows": {
+		"type": "number",
+		"default": 1,
+		"minimum" : 1,
+		"maximum" : 64000,
+		"description": "number of flows for (dstip, srcip) pair"
+	},
     "dir": {
       "type": "string",
       "enum": ["uplink", "downlink", "bidir"],
