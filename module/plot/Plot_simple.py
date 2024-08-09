@@ -121,8 +121,7 @@ class Plot(Base):
             \centering
             \begin{{tikzpicture}}
             \begin{{{axis_type}}}[
-                xlabel={xlabel}, {ylabel_opt}
-                {symbolic_x_coords}
+                xlabel={xlabel}, {ylabel_opt}, {symbolic_x_coords}
                 legend pos=outer north east,
                 legend cell align=left, {other_opts},
             ]
@@ -163,7 +162,9 @@ class Plot(Base):
             x = row[self.conf.x_axis]
             groups = ensure_list(self.conf.group_by)
             for idx, var_name in enumerate(y_axis):
+                print(var_name)
                 y = row.get(var_name, None)
+                print(y)
                 if y is None:
                     y = "nan"
                 try:
