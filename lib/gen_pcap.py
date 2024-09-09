@@ -324,7 +324,7 @@ def gen_pcap(*defaults):
         args.pcap_file = PcapWriter(args.output.name)
 
     processes = []
-    for i in range(worker_num):
+    for _ in range(worker_num):
         p = multiprocessing.Process(target=gen_pkt_obj.do_work)
         p.start()
         processes.append(p)

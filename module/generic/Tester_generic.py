@@ -38,6 +38,7 @@ class Tester(Base):
         subprocess.run(cmd, shell=True, check=True, cwd=out_dir, env=self.env)
 
     def collect_results(self):
+
         try:
             with open(Path(self.out_dir)/'result.json') as f:
                 res = json.load(f)

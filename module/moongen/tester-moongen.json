@@ -58,6 +58,14 @@
       "default": "",
       "description": "Absolute path of the custom Tester teardown script"
     },
+    "additional-measurement-files": {
+      "type": "array",
+	  "items": {
+		"type": "string"
+	  },
+      "description": "efine additional measurement resource files",
+      "default": []
+    },
     "default": {}
   },
   "required": [],

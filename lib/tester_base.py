@@ -18,12 +18,18 @@
 import datetime
 import subprocess
 import time
+import os
 from pathlib import Path
 
 class Tester(object):
     def __init__(self, conf):
         self.conf = conf
+        sut = conf.sut
         self.result = {}
+        self.additional_measurement_files = conf.tester.additional_measurement_files
+        self.env = os.environ.copy()
+        for var, val in sut.environ.items():
+            self.env[var] = str(val)
 
         cwd = str(Path(__file__).parent)
         cmd = ['git', 'describe', '--dirty', '--always', '--tags']
@@ -51,7 +57,7 @@ class Tester(object):
 
     def run_script(self, script):
         if Path(script).is_file():
-            subprocess.run([str(script)], check=True)
+            subprocess.run([str(script)], check=True, env=self.env )
 
     def run_setup_script(self):
         self.run_script(self.conf.tester.setup_script)

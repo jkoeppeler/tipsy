@@ -121,8 +121,7 @@ class Plot(Base):
             \centering
             \begin{{tikzpicture}}
             \begin{{{axis_type}}}[
-                xlabel={xlabel}, {ylabel_opt}
-                {symbolic_x_coords}
+                xlabel={xlabel}, {ylabel_opt}, {symbolic_x_coords}
                 legend pos=outer north east,
                 legend cell align=left, {other_opts},
             ]

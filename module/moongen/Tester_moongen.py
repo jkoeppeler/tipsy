@@ -17,6 +17,8 @@
 
 import csv
 import subprocess
+import json
+import os
 from pathlib import Path
 
 from tester_base import Tester as Base
@@ -46,6 +48,7 @@ class Tester(Base):
         pcap = out_dir / 'traffic.pcap'
         pfix = out_dir / 'mg'
         hfile = out_dir / 'mg.histogram.csv'
+        print(self.additional_measurement_files)
         cmd = ['sudo', self.mg_cmd, self.script, self.txdev, self.rxdev, pcap,
                '-l', '-t', '-r', self.runtime, '-o', pfix, '--hfile', hfile]
         if self.rate_limit:
@@ -55,6 +58,7 @@ class Tester(Base):
         subprocess.call(cmd)
 
     def collect_results(self):
+        latency = {}
         with open('mg.latency.csv') as f:
             reader = csv.DictReader(f)
             for row in reader:
@@ -72,3 +76,13 @@ class Tester(Base):
             'latency': latency,
             'throughput': throughput
         })
+
+        for x in self.additional_measurement_files:
+            try:
+                with open(x) as f:
+                    res = json.load(f)
+            except FileNotFoundError:
+                print(f"Error! Could not find {x}")
+                res = {'error': f'not found: {x}'}
+            self.result.update(res)
+
