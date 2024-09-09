@@ -48,7 +48,6 @@ class Tester(Base):
         pcap = out_dir / 'traffic.pcap'
         pfix = out_dir / 'mg'
         hfile = out_dir / 'mg.histogram.csv'
-        print("TESTER")
         print(self.additional_measurement_files)
         cmd = ['sudo', self.mg_cmd, self.script, self.txdev, self.rxdev, pcap,
                '-l', '-t', '-r', self.runtime, '-o', pfix, '--hfile', hfile]
@@ -78,13 +77,10 @@ class Tester(Base):
             'throughput': throughput
         })
 
-        print(f"We ar in {os.getcwd()}")
         for x in self.additional_measurement_files:
             try:
                 with open(x) as f:
                     res = json.load(f)
-                    print("Read lock stats")
-                    print(res)
             except FileNotFoundError:
                 print(f"Error! Could not find {x}")
                 res = {'error': f'not found: {x}'}
